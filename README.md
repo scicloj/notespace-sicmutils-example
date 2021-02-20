@@ -4,7 +4,9 @@ An example of using Notespace to write Sicmutils notes
 
 ## Usage
 
-TBD
+Follows the instruction at [the code](./src/notespace_sicmutils_example/core.clj)'s comment block.
+
+You can see it [rendered as static html](https://scicloj.github.io/notespace-sicmutils-example/doc/notespace-sicmutils-example/core.html)
 
 ## License
 
