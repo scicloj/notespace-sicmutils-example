@@ -1,0 +1,5 @@
+{:deps {org.clojure/clojure {:mvn/version "1.10.2"}
+        sicmutils {:git/url "https://github.com/sicmutils/sicmutils.git"
+                   :sha     "ba0ada15eff3637fa30d809430c1a8717ebf23ea"}
+        notespace-sicmutils {:git/url "https://github.com/scicloj/notespace-sicmutils.git"
+                             :sha     "6b0b07ab18de38385977a0638b26f6f55bf89abf"}}}
