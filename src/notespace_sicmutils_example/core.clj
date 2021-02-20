@@ -4,6 +4,7 @@
             [notespace-sicmutils.setup]
             [sicmutils.env]))
 
+^kind/hidden
 (comment
   ;; Here is how you can use Notespace in a minimal way to render this namespace. Please keep these calls inside a comment block.
   ;; Notespace does offer a mode dynamic experience, with some integration into popular Clojure editors' functions.
