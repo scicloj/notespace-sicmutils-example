@@ -10,7 +10,7 @@ You can see it [rendered as static html](https://scicloj.github.io/notespace-sic
 
 ## License
 
-Copyright © 2021
+Copyright © 2021 Scicloj
 
 This program and the accompanying materials are made available under the
 terms of the Eclipse Public License 2.0 which is available at
