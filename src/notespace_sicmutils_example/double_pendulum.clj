@@ -171,12 +171,6 @@ let us require some namespaces of the libraries we will be using."]
                                   :value 1}
                       :value     0})]))
 
-["Let us look at the generated spec. You see, it is not too complicated. We could also write it by hand."]
-
-^kind/hiccup
-[:div
- [:p/frisk vega-spec]]
-
 ["Now, let us render it."]
 
 ^kind/vega
