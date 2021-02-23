@@ -53,7 +53,7 @@
 
 ["## Chapter 2: simulation"]
 
-(def step 0.05)
+(def step 0.01)
 (def horizon 10)
 
 (defonce double-pendulum-data
@@ -71,6 +71,8 @@
 ^kind/dataset
 (-> double-pendulum-data
     (tablecloth/dataset "double pendulum"))
+
+["## Chapter 3: data wrangling"]
 
 (def double-pendulum-points-data
   (->> double-pendulum-data
@@ -108,7 +110,7 @@
 (-> double-pendulum-segments-data
     (tablecloth/dataset "double pendulum segments"))
 
-["## Chapter 3: Visualization"]
+["## Chapter 4: Visualization"]
 
 ^kind/vega
 (hanami-common/xform
@@ -138,5 +140,6 @@
                                  :value 1}
                   :value     0}}}])
 
+["Please play with the slider to see the pendula play together."]
 
 ["."]
