@@ -158,9 +158,9 @@ let us require some namespaces of the libraries we will be using."]
 ^kind/vega
 (hanami-common/xform
  hanami-templates/line-chart
- :DATA double-pendulum-data
- :X :t
- :Y :theta)
+ :data double-pendulum-data
+ :x :t
+ :y :theta)
 
 ^kind/vega
 (hanami-common/xform
@@ -168,6 +168,14 @@ let us require some namespaces of the libraries we will be using."]
  :DATA double-pendulum-data
  :X :t
  :Y :phi)
+
+^kind/vega
+(hanami-common/xform
+ hanami-templates/point-chart
+ :DATA double-pendulum-data
+ :X :theta
+ :Y :phi
+ :COLOR {:field :t :type :quantitative})
 
 (def animation-spec
   (hanami-common/xform
@@ -204,7 +212,18 @@ animation-spec
 ^kind/vega
 (hanami-common/xform
  hanami-templates/vconcat-chart
- :VCONCAT [animation-spec
+ :VCONCAT [(hanami-common/xform
+            hanami-templates/hconcat-chart
+            :HCONCAT [animation-spec
+                      ^kind/vega
+                      (hanami-common/xform
+                       hanami-templates/point-chart
+                       :DATA double-pendulum-data
+                       :X :theta
+                       :Y :phi
+                       :SIZE {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                                          :value 200}
+                              :value     5})])
            (hanami-common/xform
             hanami-templates/hconcat-chart
             :HCONCAT [(hanami-common/xform
