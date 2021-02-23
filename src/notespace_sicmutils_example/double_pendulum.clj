@@ -158,9 +158,9 @@ let us require some namespaces of the libraries we will be using."]
 ^kind/vega
 (hanami-common/xform
  hanami-templates/line-chart
- :data double-pendulum-data
- :x :t
- :y :theta)
+ :DATA double-pendulum-data
+ :X :t
+ :Y :theta)
 
 ^kind/vega
 (hanami-common/xform
