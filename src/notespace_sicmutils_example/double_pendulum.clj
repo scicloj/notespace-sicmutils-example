@@ -4,6 +4,7 @@
             [notespace-sicmutils.setup]
             [sicmutils.env]
             [sicmutils.env :as e]
+            [aerial.hanami.common :as hanami-common]
             [aerial.hanami.templates :as hanami-templates]))
 
 ^kind/hidden
@@ -66,6 +67,8 @@ let us require some namespaces of the libraries we will be using."]
      (up 'θ_0 'φ_0)
      (up 'θdot_0 'φdot_0)))
 
+["**TODO**: Figure out why sometimes this does not render properly on Github Pages. Locally, it seems ok."]
+
 ["## Step 2: simulation"]
 
 (def step 0.01)
@@ -90,12 +93,13 @@ let us require some namespaces of the libraries we will be using."]
                        x2 (+ x1 (* l2 (fastmath/sin phi)))
                        y2 (- y1 (* l2 (fastmath/cos phi)))
                        m  {:t t
+                           :phi phi :theta theta
                            :posx1 x1 :posy1 y1
                            :posx2 x2 :posy2 y2}]
                    (swap! collector conj! m)))})
     (persistent! @collector)))
 
-(defonce double-pendulum-data
+(def double-pendulum-data
   (let [l1 0.5
         l2 0.5]
     (run! l1 l2 step horizon)))
@@ -150,7 +154,22 @@ let us require some namespaces of the libraries we will be using."]
 
 [Hanami](https://github.com/jsa-aerial/hanami)'s templates allow us to create a [Vega-Lite](https://vega.github.io/vega-lite/) spec for visualizing our data."]
 
-(def vega-spec
+
+^kind/vega
+(hanami-common/xform
+ hanami-templates/line-chart
+ :DATA double-pendulum-data
+ :X :t
+ :Y :theta)
+
+^kind/vega
+(hanami-common/xform
+ hanami-templates/line-chart
+ :DATA double-pendulum-data
+ :X :t
+ :Y :phi)
+
+(def animation-spec
   (hanami-common/xform
    hanami-templates/layer-chart
    :LAYER [(hanami-common/xform
@@ -177,11 +196,33 @@ let us require some namespaces of the libraries we will be using."]
                                   :value 1}
                       :value     0})]))
 
-["Now, let us render it."]
+^kind/vega
+animation-spec
+
+["Let us attach to this animation plot a couple of simpler points, linked by UI."]
 
 ^kind/vega
-vega-spec
+(hanami-common/xform
+ hanami-templates/vconcat-chart
+ :VCONCAT [animation-spec
+           (hanami-common/xform
+            hanami-templates/hconcat-chart
+            :HCONCAT [(hanami-common/xform
+                       hanami-templates/point-chart
+                       :DATA double-pendulum-data
+                       :X :t
+                       :Y :theta
+                       :SIZE {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                                          :value 200}
+                              :value     5})
+                      (hanami-common/xform
+                       hanami-templates/point-chart
+                       :DATA double-pendulum-data
+                       :X :t
+                       :Y :phi
+                       :SIZE {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                                          :value 200}
+                              :value     5})])])
 
-["Please play with the slider to see the pendula play together."]
 
 ["."]
