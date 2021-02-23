@@ -73,26 +73,32 @@ let us require some namespaces of the libraries we will be using."]
 
 ["We are following generateme's [animation example](https://github.com/Clojure2D/clojure2d-examples/blob/master/src/ex28_double_pendulum.clj) in converting the polar coordinates to rectangular ones."]
 
+(defn run! [l1 l2 step horizon]
+  (let [collector (atom
+                   (transient []))]
+    (double-pendulum/evolver
+     {:dt step
+      :t horizon
+      :l1 l1
+      :l2 l2
+      :observe (fn [t state]
+                 (let [q     (nth state 1)
+                       theta (nth q 0)
+                       phi   (nth q 1)
+                       x1 (* l1 (fastmath/sin theta))
+                       y1 (- (* l1 (fastmath/cos theta)))
+                       x2 (+ x1 (* l2 (fastmath/sin phi)))
+                       y2 (- y1 (* l2 (fastmath/cos phi)))
+                       m  {:t t
+                           :posx1 x1 :posy1 y1
+                           :posx2 x2 :posy2 y2}]
+                   (swap! collector conj! m)))})
+    (persistent! @collector)))
+
 (defonce double-pendulum-data
   (let [l1 0.5
         l2 0.5]
-    (->> (range step horizon step)
-         (pmap (fn [t]
-                 (double-pendulum/evolver
-                  {:t t
-                   :l1 l1
-                   :l2 l2})))
-         (map (fn [[t [theta phi] _]]
-                (let [posx1 (* l1 (fastmath/sin theta))
-                      posy1 (- (* l1 (fastmath/cos theta)))
-                      posx2 (+ posx1 (* l2 (fastmath/sin phi)))
-                      posy2 (- posy1 (* l2 (fastmath/cos phi)))]
-                  {:t   t
-                   :posx1 posx1
-                   :posy1 posy1
-                   :posx2 posx2
-                   :posy2 posy2}))))))
-
+    (run! l1 l2 step horizon)))
 
 ^kind/dataset
 (-> double-pendulum-data
