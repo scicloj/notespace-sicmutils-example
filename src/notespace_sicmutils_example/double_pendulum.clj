@@ -3,7 +3,8 @@
             [notespace.kinds :as kind]
             [notespace-sicmutils.setup]
             [sicmutils.env]
-            [sicmutils.env :as e]))
+            [sicmutils.env :as e]
+            [aerial.hanami.templates :as hanami-templates]))
 
 ^kind/hidden
 (comment
@@ -29,20 +30,31 @@
   ;; Rendering current browser view into a static html file (under the `docs` directory):
   (notespace/render-static-html))
 
-
 ^kind/hidden
 (sicmutils.env/bootstrap-repl!)
 
-["# The double pendulum"]
+["# The double pendulum
 
-["## Step 0: setup"]
+In this tutorial, we will demonstrate how to use Notespace for Sicmutils notes, using the famous use case of The Double Pendulum."]
 
-(require '[sicmutils.examples.double-pendulum :as double-pendulum])
 
-(require '[notespace.kinds :as kind]
-         '[tablecloth.api :as tablecloth]
-         '[aerial.hanami.common :as hanami-common]
-         '[aerial.hanami.templates :as hanami-templates])
+["## Step 0: setup
+
+let us require some namespaces of the libraries we will be using."]
+
+
+(require
+ ;; Colin Smith's double pendulum port to Clojure
+ '[sicmutils.examples.double-pendulum :as double-pendulum]
+ ;; Notespace kinds -- explicitly specifying how to render things
+ '[notespace.kinds :as kind]
+ ;; Tablecloth for processig datasets and printing them nicely
+ '[tablecloth.api :as tablecloth]
+ ;; Hanami for data visualizations -- we use it to generate Vega-Lite specs
+ '[aerial.hanami.common :as hanami-common]
+ '[aerial.hanami.templates :as hanami-templates]
+ ;; Some additions to Hanami for our needs
+ '[notespace-sicmutils.hanami-extras :as hanami-extras])
 
 ["## Step 1: equations"]
 
@@ -74,6 +86,8 @@
 
 ["## Step 3: data wrangling"]
 
+["Let us reorganize our data so that it is comfortable to visualize the weights of the pendula as points:"]
+
 (def double-pendulum-points-data
   (->> double-pendulum-data
        (mapcat (fn [{:keys [t p1x p1y p2x p2y]}]
@@ -89,6 +103,8 @@
 ^kind/dataset
 (-> double-pendulum-points-data
     (tablecloth/dataset "double pendulum points"))
+
+["Let us reorganize our data so that it is comfortable to visualize the pivots of the pendula as secgments:"]
 
 (def double-pendulum-segments-data
   (->> double-pendulum-data
@@ -110,38 +126,47 @@
 (-> double-pendulum-segments-data
     (tablecloth/dataset "double pendulum segments"))
 
-["## Step 4: Visualization"]
+["## Step 4: Visualization
+
+[Hanami](https://github.com/jsa-aerial/hanami)'s templates allow us to create a [Vega-Lite](https://vega.github.io/vega-lite/) spec for visualizing our data."]
+
+(def vega-spec
+  (hanami-common/xform
+   hanami-templates/layer-chart
+   :LAYER [(hanami-common/xform
+            hanami-templates/point-chart
+            :DATA double-pendulum-points-data
+            :COLOR {:field :id :type :nominal}
+            :SIZE {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                               :value 200}
+                   :value     5}
+            :OPACITY {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                                  :value 1}
+                      :value     0.3}
+            :SELECTION {:selected {:fields [:t]
+                                   :type   :single
+                                   :bind   {:t {:min   step
+                                                :max   (- horizon step)
+                                                :input :range
+                                                :step  step}}}})
+           (hanami-common/xform
+            hanami-extras/rule-chart
+            :DATA double-pendulum-segments-data
+            :COLOR {:field :id :type :nominal}
+            :OPACITY {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                                  :value 1}
+                      :value     0})]))
+
+["Let us look at the generated spec. You see, it is not too complicated. We could also write it by hand."]
+
+^kind/hiccup
+[:div
+ [:p/frisk vega-spec]]
+
+["Now, let us render it."]
 
 ^kind/vega
-(hanami-common/xform
- hanami-templates/layer-chart
- :LAYER [(hanami-common/xform
-          hanami-templates/point-chart
-          :DATA double-pendulum-points-data
-          :COLOR {:field :id :type :nominal}
-          :SIZE {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
-                             :value 200}
-                 :value     5}
-          :OPACITY {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
-                             :value 1}
-                    :value     0.3}
-          :SELECTION {:selected {:fields [:t]
-                                 :type   :single
-                                 :bind   {:t {:min step
-                                              :max (- horizon step)
-                                              :input :range
-                                              :step step}}}})
-         {:data {:values double-pendulum-segments-data}
-          :mark "rule"
-          :encoding
-          {:x  {:field :x, :type "quantitative"}
-           :y  {:field :y, :type "quantitative"}
-           :x2 {:field :x2, :type "quantitative"}
-           :y2 {:field :y2, :type "quantitative"}
-           :color {:field :id :type :nominal}
-           :opacity {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
-                                 :value 1}
-                  :value     0}}}])
+vega-spec
 
 ["Please play with the slider to see the pendula play together."]
 
