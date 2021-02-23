@@ -4,9 +4,9 @@ An example of using Notespace to write Sicmutils notes
 
 ## Usage
 
-Follows the instruction at [the code](./src/notespace_sicmutils_example/core.clj)'s comment block.
+Follows the instruction at [the doulbe pendulum example code](./src/notespace_sicmutils_example/double_pendulum.clj)'s comment block.
 
-You can see it [rendered as static html](https://scicloj.github.io/notespace-sicmutils-example/docs/notespace-sicmutils-example/core).
+You can see it [rendered as static html](https://scicloj.github.io/notespace-sicmutils-example/docs/notespace-sicmutils-example/double-pendulum).
 
 ## License
 
