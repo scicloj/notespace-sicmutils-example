@@ -120,8 +120,11 @@
           :DATA double-pendulum-points-data
           :COLOR {:field :id :type :nominal}
           :SIZE {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
-                             :value 50}
+                             :value 200}
                  :value     5}
+          :OPACITY {:condition {:test  "abs(selected_t - datum['t']) < 0.00001"
+                             :value 1}
+                    :value     0.3}
           :SELECTION {:selected {:fields [:t]
                                  :type   :single
                                  :bind   {:t {:min step
