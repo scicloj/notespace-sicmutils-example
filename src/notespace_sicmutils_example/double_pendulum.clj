@@ -30,6 +30,7 @@
   ;; Rendering current browser view into a static html file (under the `docs` directory):
   (notespace/render-static-html))
 
+
 ^kind/hidden
 (sicmutils.env/bootstrap-repl!)
 
@@ -54,7 +55,9 @@ let us require some namespaces of the libraries we will be using."]
  '[aerial.hanami.common :as hanami-common]
  '[aerial.hanami.templates :as hanami-templates]
  ;; Some additions to Hanami for our needs
- '[notespace-sicmutils.hanami-extras :as hanami-extras])
+ '[notespace-sicmutils.hanami-extras :as hanami-extras]
+ ;; Fastmath for some math
+ '[fastmath.core :as fastmath])
 
 ["## Step 1: equations"]
 
@@ -68,17 +71,28 @@ let us require some namespaces of the libraries we will be using."]
 (def step 0.01)
 (def horizon 10)
 
+["We are following generateme's [animation example](https://github.com/Clojure2D/clojure2d-examples/blob/master/src/ex28_double_pendulum.clj) in converting the polar coordinates to rectangular ones."]
+
 (defonce double-pendulum-data
-  (->> (range step horizon step)
-       (pmap (fn [t]
-               (double-pendulum/evolver
-                {:t t})))
-       (map (fn [[t [p1x p1y] [p2x p2y]]]
-              {:t   t
-               :p1x p1x
-               :p1y p1y
-               :p2x p2x
-               :p2y p2y}))))
+  (let [l1 0.5
+        l2 0.5]
+    (->> (range step horizon step)
+         (pmap (fn [t]
+                 (double-pendulum/evolver
+                  {:t t
+                   :l1 l1
+                   :l2 l2})))
+         (map (fn [[t [theta phi] _]]
+                (let [posx1 (* l1 (fastmath/sin theta))
+                      posy1 (- (* l1 (fastmath/cos theta)))
+                      posx2 (+ posx1 (* l2 (fastmath/sin phi)))
+                      posy2 (- posy1 (* l2 (fastmath/cos phi)))]
+                  {:t   t
+                   :posx1 posx1
+                   :posy1 posy1
+                   :posx2 posx2
+                   :posy2 posy2}))))))
+
 
 ^kind/dataset
 (-> double-pendulum-data
@@ -90,14 +104,14 @@ let us require some namespaces of the libraries we will be using."]
 
 (def double-pendulum-points-data
   (->> double-pendulum-data
-       (mapcat (fn [{:keys [t p1x p1y p2x p2y]}]
+       (mapcat (fn [{:keys [t posx1 posy1 posx2 posy2]}]
                  [{:t  t
-                   :x  p1x
-                   :y  p1y
+                   :x  posx1
+                   :y  posy1
                    :id :p1}
                   {:t  t
-                   :x  p2x
-                   :y  p2y
+                   :x  posx2
+                   :y  posy2
                    :id :p2}] ))))
 
 ^kind/dataset
@@ -108,18 +122,18 @@ let us require some namespaces of the libraries we will be using."]
 
 (def double-pendulum-segments-data
   (->> double-pendulum-data
-       (mapcat (fn [{:keys [t p1x p1y p2x p2y]}]
+       (mapcat (fn [{:keys [t posx1 posy1 posx2 posy2]}]
                  [{:t  t
                    :x 0
                    :y 0
-                   :x2 p1x
-                   :y2 p1y
+                   :x2 posx1
+                   :y2 posy1
                    :id :p1}
                   {:t  t
-                   :x  p1x
-                   :y  p1y
-                   :x2 p2x
-                   :y2 p2y
+                   :x  posx1
+                   :y  posy1
+                   :x2 posx2
+                   :y2 posy2
                    :id :p2}]))))
 
 ^kind/dataset
