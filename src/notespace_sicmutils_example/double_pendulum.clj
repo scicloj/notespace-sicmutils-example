@@ -35,7 +35,7 @@
 
 ["# The double pendulum"]
 
-["## Chapter 0: setup"]
+["## Step 0: setup"]
 
 (require '[sicmutils.examples.double-pendulum :as double-pendulum])
 
@@ -44,14 +44,14 @@
          '[aerial.hanami.common :as hanami-common]
          '[aerial.hanami.templates :as hanami-templates])
 
-["## Chapter 1: equations"]
+["## Step 1: equations"]
 
 ((double-pendulum/state-derivative 'm_1 'm_2 'l_1 'l_2 'g)
  (up 't
      (up 'θ_0 'φ_0)
      (up 'θdot_0 'φdot_0)))
 
-["## Chapter 2: simulation"]
+["## Step 2: simulation"]
 
 (def step 0.01)
 (def horizon 10)
@@ -72,7 +72,7 @@
 (-> double-pendulum-data
     (tablecloth/dataset "double pendulum"))
 
-["## Chapter 3: data wrangling"]
+["## Step 3: data wrangling"]
 
 (def double-pendulum-points-data
   (->> double-pendulum-data
@@ -110,7 +110,7 @@
 (-> double-pendulum-segments-data
     (tablecloth/dataset "double pendulum segments"))
 
-["## Chapter 4: Visualization"]
+["## Step 4: Visualization"]
 
 ^kind/vega
 (hanami-common/xform
