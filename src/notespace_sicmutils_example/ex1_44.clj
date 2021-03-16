@@ -366,9 +366,8 @@ pendulum bob itself as it evolves through time."]
 (system-inspector chaotic-data)
 
 ["And again for the regular initial condition:"]
-
 ^kind/vega
-(plot-spec regular-data)
+(animation-spec regular-data)
 
 ["### Generalized coordinates, velocities
 
