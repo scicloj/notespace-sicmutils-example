@@ -1,4 +1,4 @@
-(defproject notespace-sicmutils-examples "0.18.0"
+(defproject notespace-sicmutils-examples "0.18.1"
   :description "Demonstrating the use of Sicmutils with Notespace"
   :url "github.com/scicloj/notespace-sicmutils-example"
   :license {:name "EPL-2.0 OR GPL-2.0-or-later WITH Classpath-exception-2.0"
